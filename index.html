@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Horario de clase 26/27</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="horario.css">
+</head>
+<body>
+<main>
+
+  <header class="titulo">
+    <div>
+      <h1>Horario de clase <span>26/27</span></h1>
+      <p id="fecha"></p>
+    </div>
+    <button id="tema" type="button">🌙 Modo oscuro</button>
+  </header>
+
+  <!-- Los rellena horario.js -->
+  <section class="paneles">
+    <div class="panel" id="ahora"></div>
+    <div class="panel" id="siguiente"></div>
+  </section>
+
+  <div class="contenedor">
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2"></th>
+          <th>Lunes</th>
+          <th>Martes</th>
+          <th>Miércoles</th>
+          <th>Jueves</th>
+          <th>Viernes</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- 1º -->
+        <tr>
+          <td class="num">1º</td>
+          <td class="hora">8:15 - 9:10</td>
+          <td class="clase ITK" data-dia="1" data-ini="8:15" data-fin="9:10"><a href="https://classroom.google.com/u/1/c/ODcyNjI1OTk1NDcz" target="_blank" title="ITK"><strong>ITK</strong><small>Machín</small></a></td>
+          <td class="clase BAE" rowspan="3" data-dia="2" data-ini="8:15" data-fin="11:00"><a href="https://aulasalesianoslacuesta.com/course/view.php?id=358" target="_blank" title="Bases de datos"><strong>BAE</strong><small>Alexis</small></a></td>
+          <td class="clase ETD" rowspan="3" data-dia="3" data-ini="8:15" data-fin="11:00"><a href="https://aulasalesianoslacuesta.com/course/view.php?id=361" target="_blank" title="Entorno de desarrollo"><strong>ETD</strong><small>Santi</small></a></td>
+          <td class="clase ITK" rowspan="2" data-dia="4" data-ini="8:15" data-fin="10:05"><a href="https://classroom.google.com/u/1/c/ODcyNjI1OTk1NDcz" target="_blank" title="ITK"><strong>ITK</strong><small>Machín</small></a></td>
+          <td class="clase PRO" rowspan="3" data-dia="5" data-ini="8:15" data-fin="11:00"><a href="https://classroom.google.com/u/1/c/ODcxMzI3MjA3NjQy" target="_blank" title="Programación"><strong>PRO</strong><small>Fernando</small></a></td>
+        </tr>
+
+        <!-- 2º -->
+        <tr>
+          <td class="num">2º</td>
+          <td class="hora">9:10 - 10:05</td>
+          <td class="clase SSF" rowspan="2" data-dia="1" data-ini="9:10" data-fin="11:00"><a href="https://aulasalesianoslacuesta.com/course/view.php?id=366" target="_blank" title="Sistemas informáticos"><strong>SSF</strong><small>Santi</small></a></td>
+        </tr>
+
+        <!-- 3º -->
+        <tr>
+          <td class="num">3º</td>
+          <td class="hora">10:05 - 11:00</td>
+          <td class="clase DJK" data-dia="4" data-ini="10:05" data-fin="11:00"><a href="https://classroom.google.com/u/1/c/ODY5NDAyMjYyMjM2" target="_blank" title="Digitalización"><strong>DJK</strong><small>Adrian</small></a></td>
+        </tr>
+
+        <!-- Recreo -->
+        <tr class="recreo">
+          <th colspan="2">11:00 - 11:30</th>
+          <td colspan="5">RECREO</td>
+        </tr>
+
+        <!-- 4º -->
+        <tr>
+          <td class="num">4º</td>
+          <td class="hora">11:30 - 12:25</td>
+          <td class="clase LMI" rowspan="3" data-dia="1" data-ini="11:30" data-fin="14:15"><a href="https://aulasalesianoslacuesta.com/course/view.php?id=364" target="_blank" title="Lenguaje de marcas"><strong>LMI</strong><small>Alexis</small></a></td>
+          <td class="clase SSF" rowspan="3" data-dia="2" data-ini="11:30" data-fin="14:15"><a href="https://aulasalesianoslacuesta.com/course/view.php?id=366" target="_blank" title="Sistemas informáticos"><strong>SSF</strong><small>Santi</small></a></td>
+          <td class="clase PRO" rowspan="3" data-dia="3" data-ini="11:30" data-fin="14:15"><a href="https://classroom.google.com/u/1/c/ODcxMzI3MjA3NjQy" target="_blank" title="Programación"><strong>PRO</strong><small>Fernando</small></a></td>
+          <td class="clase DJK" data-dia="4" data-ini="11:30" data-fin="12:25"><a href="https://classroom.google.com/u/1/c/ODY5NDAyMjYyMjM2" target="_blank" title="Digitalización"><strong>DJK</strong><small>Adrian</small></a></td>
+          <td class="clase LMI" data-dia="5" data-ini="11:30" data-fin="12:25"><a href="https://aulasalesianoslacuesta.com/course/view.php?id=364" target="_blank" title="Lenguaje de marcas"><strong>LMI</strong><small>Alexis</small></a></td>
+        </tr>
+
+        <!-- 5º -->
+        <tr>
+          <td class="num">5º</td>
+          <td class="hora">12:25 - 13:20</td>
+          <td class="clase ING" rowspan="2" data-dia="4" data-ini="12:25" data-fin="14:15"><a href="https://classroom.google.com/u/1/c/ODg1NDQ1ODQ1NDI2" target="_blank" title="Inglés"><strong>ING</strong><small>Calzadilla</small></a></td>
+          <td class="clase BAE" rowspan="2" data-dia="5" data-ini="12:25" data-fin="14:15"><a href="https://aulasalesianoslacuesta.com/course/view.php?id=358" target="_blank" title="Bases de datos"><strong>BAE</strong><small>Alexis</small></a></td>
+        </tr>
+
+        <!-- 6º -->
+        <tr>
+          <td class="num">6º</td>
+          <td class="hora">13:20 - 14:15</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <section class="tareas">
+    <h2>📝 Tareas pendientes</h2>
+    <form id="form-tarea">
+      <input id="texto-tarea" type="text" placeholder="Nueva tarea..." required>
+      <select id="materia-tarea"></select>
+      <input id="fecha-tarea" type="date">
+      <button type="submit">Añadir</button>
+    </form>
+    <ul id="lista-tareas"></ul>
+  </section>
+
+</main>
+<script src="horario.js"></script>
+</body>
+</html>

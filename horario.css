@@ -1,0 +1,221 @@
+/* ---------- Colores y tema ---------- */
+:root {
+  --fondo: #f1eef7;
+  --tarjeta: #ffffff;
+  --texto: #1f1b2b;
+  --suave: #6d6780;
+  --borde: #e2dcee;
+  --acento: #7b1fa2;
+  --cabecera: #ece4f6;
+}
+
+[data-tema="oscuro"] {
+  --fondo: #14111c;
+  --tarjeta: #1f1a2b;
+  --texto: #f1edf8;
+  --suave: #a79fba;
+  --borde: #372f48;
+  --acento: #c77dff;
+  --cabecera: #2b2439;
+}
+
+/* Color de cada asignatura (--c = fondo, --t = texto) */
+.ITK { --c: #e617d6; }
+.SSF { --c: #3b33c4; }
+.BAE { --c: #1bba4b; }
+.ETD { --c: #d2691e; }
+.PRO { --c: #bb193b; }
+.DJK { --c: #587f94; }
+.LMI { --c: #6a8fbf; }
+.ING { --c: #e8e18c; --t: #2b2700; }
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 24px 16px 48px;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+main { max-width: 1050px; margin: 0 auto; }
+
+/* ---------- Cabecera ---------- */
+.titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+h1 { margin: 0; font-size: clamp(24px, 4vw, 34px); }
+h1 span { color: var(--acento); }
+#fecha { margin: 4px 0 0; color: var(--suave); text-transform: capitalize; }
+
+#tema {
+  border: 1px solid var(--borde);
+  background: var(--tarjeta);
+  color: var(--texto);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* ---------- Paneles Ahora / Siguiente ---------- */
+.paneles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.panel {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-left: 8px solid var(--c, var(--borde));
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .06);
+}
+
+.panel small { color: var(--suave); text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
+.panel h2 { margin: 6px 0 2px; font-size: 22px; }
+.panel p { margin: 0 0 10px; color: var(--suave); }
+
+.boton {
+  display: inline-block;
+  background: var(--c, var(--acento));
+  color: var(--t, #fff);
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ---------- Tabla ---------- */
+.contenedor {
+  overflow-x: auto;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .08);
+}
+
+table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: separate;
+  border-spacing: 6px;
+  table-layout: fixed;
+}
+
+th, td { text-align: center; }
+
+thead th {
+  background: var(--cabecera);
+  padding: 12px 6px;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+thead th.hoy { background: var(--acento); color: #fff; }
+
+.num { width: 46px; font-weight: bold; color: var(--suave); }
+.hora { width: 110px; font-size: 13px; color: var(--suave); }
+
+.recreo th, .recreo td {
+  height: 38px;
+  border-radius: 12px;
+  background: repeating-linear-gradient(45deg, transparent 0 10px, var(--cabecera) 10px 20px);
+  color: var(--suave);
+  font-size: 13px;
+  letter-spacing: .4em;
+  font-weight: 600;
+}
+
+/* ---------- Casillas de clase ---------- */
+td.clase {
+  height: 66px;
+  padding: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 75%, black));
+  transition: transform .15s, box-shadow .15s;
+}
+
+td.clase a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-height: 66px;
+  padding: 8px;
+  color: var(--t, #fff);
+  text-decoration: none;
+}
+
+td.clase strong { font-size: clamp(17px, 2.4vw, 24px); font-weight: 600; letter-spacing: .03em; }
+td.clase small { font-size: 12px; opacity: .9; }
+
+td.clase:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0, 0, 0, .25); }
+
+td.clase.ahora { outline: 4px solid var(--texto); outline-offset: 2px; }
+
+/* ---------- Tareas ---------- */
+.tareas {
+  margin-top: 24px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 20px;
+  padding: 18px;
+}
+
+.tareas h2 { margin: 0 0 12px; }
+
+#form-tarea { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
+#form-tarea input, #form-tarea select, #form-tarea button {
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--borde);
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+#texto-tarea { flex: 1; min-width: 180px; }
+
+#form-tarea button { background: var(--acento); color: #fff; border: 0; cursor: pointer; font-weight: 600; }
+
+#lista-tareas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+
+#lista-tareas li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--fondo);
+}
+
+#lista-tareas li.hecha .txt { text-decoration: line-through; opacity: .5; }
+#lista-tareas .txt { flex: 1; }
+#lista-tareas .fecha { color: var(--suave); font-size: 13px; }
+#lista-tareas .fecha.urgente { color: #e53935; font-weight: 600; }
+
+.etiqueta {
+  background: var(--c);
+  color: var(--t, #fff);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#lista-tareas button { border: 0; background: none; color: var(--suave); font-size: 18px; cursor: pointer; }
+.vacio { color: var(--suave); }
