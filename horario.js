@@ -30,7 +30,7 @@ function tarjeta(etiqueta, clase, detalle) {
   return `<small>${etiqueta}</small>
     <h2>${clase.materia}</h2>
     <p>${clase.profe} · ${detalle}</p>
-    <a class="boton" href="${clase.enlace}" target="_blank">Abrir aula</a>`;
+    <a class="boton" href="${clase.enlace}" target="_blank" rel="noopener noreferrer">Abrir aula</a>`;
 }
 
 function buscarSiguiente(dia, minutos) {
@@ -102,7 +102,7 @@ botonTema.addEventListener("click", () => {
 });
 
 /* ---------- Tareas pendientes (se guardan en el navegador) ---------- */
-let tareas = JSON.parse(localStorage.getItem("tareas") || "[]");
+let tareas = [];
 
 const selectMateria = document.getElementById("materia-tarea");
 const listaTareas = document.getElementById("lista-tareas");
@@ -113,6 +113,32 @@ clases.forEach(c => { unicas[c.siglas] = c; });
 Object.values(unicas).forEach(c => {
   selectMateria.innerHTML += `<option value="${c.siglas}">${c.materia}</option>`;
 });
+
+// Escapa el texto para que nunca se interprete como HTML
+function escapar(texto) {
+  const div = document.createElement("div");
+  div.textContent = String(texto);
+  return div.innerHTML;
+}
+
+// Valida cualquier lista de tareas (de localStorage o de la nube)
+function limpiarTareas(datos) {
+  if (!Array.isArray(datos)) return [];
+  return datos.slice(0, 100)
+    .filter(t => t && typeof t.texto === "string")
+    .map(t => ({
+      texto: t.texto.slice(0, 200),
+      materia: unicas[t.materia] ? t.materia : "",
+      fecha: /^\d{4}-\d{2}-\d{2}$/.test(t.fecha) ? t.fecha : "",
+      hecha: t.hecha === true
+    }));
+}
+
+try {
+  tareas = limpiarTareas(JSON.parse(localStorage.getItem("tareas") || "[]"));
+} catch (e) {
+  tareas = [];
+}
 
 function guardarTareas() {
   localStorage.setItem("tareas", JSON.stringify(tareas));
@@ -140,7 +166,7 @@ function pintarTareas() {
     return `<li class="${t.hecha ? "hecha" : ""}">
       <input type="checkbox" data-i="${i}" ${t.hecha ? "checked" : ""}>
       <span class="etiqueta ${t.materia}">${t.materia}</span>
-      <span class="txt">${t.texto}</span>
+      <span class="txt">${escapar(t.texto)}</span>
       ${fecha}
       <button data-borrar="${i}" title="Borrar">✕</button>
     </li>`;
@@ -193,7 +219,7 @@ function conectar(codigo) {
     if (datos === null) {
       nube.guardar(codigo, tareas);   // código nuevo: subo lo que tengo
     } else {
-      tareas = datos;                 // gana lo que hay en la nube
+      tareas = limpiarTareas(datos);  // gana lo que hay en la nube (ya validado)
       localStorage.setItem("tareas", JSON.stringify(tareas));
       pintarTareas();
     }
@@ -204,8 +230,8 @@ function conectar(codigo) {
 
 botonConectar.addEventListener("click", () => {
   const codigo = campoCodigo.value.trim();
-  if (codigo.length < 10) {
-    alert("El código debe tener al menos 10 caracteres.");
+  if (codigo.length < 16) {
+    alert("El código debe tener al menos 16 caracteres.");
     return;
   }
   conectar(codigo);
@@ -226,4 +252,11 @@ import("./nube.js").then(modulo => {
   }
 }).catch(() => {
   estado.textContent = "Solo en este dispositivo";
+});
+
+// Genera un código aleatorio y difícil de adivinar (24 caracteres)
+document.getElementById("generar").addEventListener("click", () => {
+  const letras = "abcdefghijkmnpqrstuvwxyz23456789";
+  const bytes = crypto.getRandomValues(new Uint8Array(24));
+  campoCodigo.value = [...bytes].map(b => letras[b % letras.length]).join("");
 });
