@@ -116,6 +116,11 @@ Object.values(unicas).forEach(c => {
 
 function guardarTareas() {
   localStorage.setItem("tareas", JSON.stringify(tareas));
+  if (nube && nube.nubeDisponible && codigoSync) {
+    nube.guardar(codigoSync, tareas).catch(() => {
+      estado.textContent = "⚠️ No se pudo guardar en la nube";
+    });
+  }
 }
 
 function pintarTareas() {
@@ -167,3 +172,58 @@ listaTareas.addEventListener("click", e => {
 });
 
 pintarTareas();
+
+/* ---------- Sincronización entre dispositivos (Firebase) ---------- */
+const estado = document.getElementById("estado-sync");
+const campoCodigo = document.getElementById("codigo-sync");
+const botonConectar = document.getElementById("conectar");
+let nube = null;
+let codigoSync = localStorage.getItem("codigoSync");
+let dejarDeEscuchar = null;
+
+function conectar(codigo) {
+  if (dejarDeEscuchar) dejarDeEscuchar();
+  codigoSync = codigo;
+  localStorage.setItem("codigoSync", codigo);
+  estado.textContent = "Conectando...";
+
+  dejarDeEscuchar = nube.escuchar(codigo, (datos, esLocal) => {
+    estado.textContent = "☁️ Sincronizado";
+    if (esLocal) return;              // es un cambio que acabo de hacer yo
+    if (datos === null) {
+      nube.guardar(codigo, tareas);   // código nuevo: subo lo que tengo
+    } else {
+      tareas = datos;                 // gana lo que hay en la nube
+      localStorage.setItem("tareas", JSON.stringify(tareas));
+      pintarTareas();
+    }
+  }, () => {
+    estado.textContent = "⚠️ Sin conexión con la nube";
+  });
+}
+
+botonConectar.addEventListener("click", () => {
+  const codigo = campoCodigo.value.trim();
+  if (codigo.length < 10) {
+    alert("El código debe tener al menos 10 caracteres.");
+    return;
+  }
+  conectar(codigo);
+});
+
+// nube.js se carga aparte: si falla, el resto de la web sigue funcionando
+import("./nube.js").then(modulo => {
+  nube = modulo;
+  if (!nube.nubeDisponible) {
+    estado.textContent = "Solo en este dispositivo (falta configurar Firebase)";
+    return;
+  }
+  if (codigoSync) {
+    campoCodigo.value = codigoSync;
+    conectar(codigoSync);
+  } else {
+    estado.textContent = "Escribe un código para sincronizar";
+  }
+}).catch(() => {
+  estado.textContent = "Solo en este dispositivo";
+});
