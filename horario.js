@@ -31,7 +31,7 @@ function tarjeta(etiqueta, clase, detalle, progreso) {
     <h2>${clase.materia}</h2>
     <p>${clase.profe} · ${detalle}</p>
     ${progreso === undefined ? "" : '<div class="barra"><i style="width:' + progreso + '%"></i></div>'}
-    <a class="boton" href="${clase.enlace}" target="_blank" rel="noopener noreferrer">Abrir aula</a>`;
+    <a class="boton" href="${clase.enlace}" target="_blank" rel="noopener noreferrer">Abrir aula ${ico("flecha")}</a>`;
 }
 
 function buscarSiguiente(dia, minutos) {
@@ -65,7 +65,7 @@ function actualizar() {
     panelAhora.innerHTML = tarjeta("Ahora", actual, "termina en " + formatoTiempo(actual.fin - minutos), Math.round((minutos - actual.ini) / (actual.fin - actual.ini) * 100));
   } else if (dia >= 1 && dia <= 5 && minutos >= 660 && minutos < 690) {
     panelAhora.className = "panel";
-    panelAhora.innerHTML = `<small>Ahora</small><h2>☕ Recreo</h2><p>Vuelves a clase en ${formatoTiempo(690 - minutos)}</p>`;
+    panelAhora.innerHTML = `<small>Ahora</small><h2>${ico("cafe")} Recreo</h2><p>Vuelves a clase en ${formatoTiempo(690 - minutos)}</p>`;
   } else {
     panelAhora.className = "panel";
     panelAhora.innerHTML = `<small>Ahora</small><h2>Sin clase</h2><p>Disfruta el descanso</p>`;
@@ -90,7 +90,7 @@ const botonTema = document.getElementById("tema");
 
 function ponerTema(tema) {
   document.documentElement.dataset.tema = tema;
-  botonTema.textContent = tema === "oscuro" ? "☀️ Modo claro" : "🌙 Modo oscuro";
+  botonTema.innerHTML = ico(tema === "oscuro" ? "sol" : "luna") + (tema === "oscuro" ? " Modo claro" : " Modo oscuro");
   localStorage.setItem("tema", tema);
 }
 
@@ -145,14 +145,14 @@ function guardarTareas() {
   localStorage.setItem("tareas", JSON.stringify(tareas));
   if (nube && nube.nubeDisponible && codigoSync) {
     nube.guardar(codigoSync, tareas).catch(() => {
-      estado.textContent = "⚠️ No se pudo guardar en la nube";
+      avisoSync("alerta", "No se pudo guardar en la nube");
     });
   }
 }
 
 function pintarListaTareas() {
   if (tareas.length === 0) {
-    listaTareas.innerHTML = `<li class="vacio">No tienes tareas pendientes 🎉</li>`;
+    listaTareas.innerHTML = `<li class="vacio">${ico("check")} No tienes tareas pendientes</li>`;
     return;
   }
 
@@ -169,7 +169,7 @@ function pintarListaTareas() {
       <span class="etiqueta ${t.materia}">${t.materia}</span>
       <span class="txt">${escapar(t.texto)}</span>
       ${fecha}
-      <button data-borrar="${i}" title="Borrar">✕</button>
+      <button data-borrar="${i}" title="Borrar">${ico("x")}</button>
     </li>`;
   }).join("");
 }
@@ -220,7 +220,7 @@ function conectar(codigo) {
   estado.textContent = "Conectando...";
 
   dejarDeEscuchar = nube.escuchar(codigo, (datos, esLocal) => {
-    estado.textContent = "☁️ Sincronizado";
+    avisoSync("nubeok", "Sincronizado");
     if (esLocal) return;              // es un cambio que acabo de hacer yo
     if (datos === null) {
       nube.guardar(codigo, tareas);   // código nuevo: subo lo que tengo
@@ -230,7 +230,7 @@ function conectar(codigo) {
       pintarTareas();
     }
   }, () => {
-    estado.textContent = "⚠️ Sin conexión con la nube";
+    avisoSync("alerta", "Sin conexión con la nube");
   });
 }
 
@@ -336,15 +336,15 @@ function pintarListaClase() {
     listaTitulo.textContent = "Próximos avisos";
   }
   if (items.length === 0) {
-    listaClase.innerHTML = '<li class="vacio">Nada para este periodo 🎉</li>';
+    listaClase.innerHTML = `<li class="vacio">${ico("check")} Nada para este periodo</li>`;
     return;
   }
-  const nombres = { examen: "📝 Examen", tarea: "📌 Tarea", personal: "🙋 Mía" };
+  const nombres = { examen: ico("examen") + " Examen", tarea: ico("tarea") + " Tarea", personal: ico("usuario") + " Mía" };
   listaClase.innerHTML = items.map(e => `<li class="${e.tipo}">
     <span class="etiqueta ${e.materia}">${e.materia || "—"}</span>
     <span class="txt"><b>${nombres[e.tipo]}</b> ${escapar(e.titulo)}</span>
     <span class="fecha">${formatoFecha(e.fecha)}</span>
-    ${esAdmin && e.id ? `<button data-id="${e.id}" title="Borrar">✕</button>` : ""}
+    ${esAdmin && e.id ? `<button data-id="${e.id}" title="Borrar">${ico("x")}</button>` : ""}
   </li>`).join("");
 }
 
@@ -355,8 +355,8 @@ function pintarTodo() {
 
 function pintarAcceso() {
   acceso.innerHTML = usuario
-    ? `<span>${escapar(usuario.email)}${esAdmin ? " · administrador" : ""}</span> <button id="btn-salir" type="button">Salir</button>`
-    : '<button id="btn-entrar" type="button">🔐 Acceso administrador</button>';
+    ? `<span class="rol">${ico(esAdmin ? "escudo" : "usuario")} ${escapar(usuario.email)}${esAdmin ? " · administrador" : ""}</span> <button id="btn-salir" type="button">${ico("salir")} Salir</button>`
+    : `<button id="btn-entrar" type="button">${ico("entrar")} Acceso administrador</button>`;
   formAdmin.hidden = !esAdmin;
 }
 
@@ -440,7 +440,7 @@ function pintarVistaDia() {
   let hayRecreo = false;
   delDia.forEach((c, i) => {
     if (!hayRecreo && c.ini >= 690) {
-      html += '<div class="carta-recreo">☕ Recreo · 11:00 – 11:30</div>';
+      html += `<div class="carta-recreo">${ico("cafe")} Recreo · 11:00 – 11:30</div>`;
       hayRecreo = true;
     }
     html += `<div class="carta-dia" data-i="${c.ini}" data-f="${c.fin}" style="animation-delay:${i * 70}ms">
@@ -462,3 +462,12 @@ tabsDia.addEventListener("click", e => {
 
 pintarVistaDia();
 setInterval(marcarAhoraDia, 30000);
+
+/* ---------- Iconos (están definidos en index.html) ---------- */
+function ico(nombre) {
+  return '<svg class="ico" aria-hidden="true"><use href="#i-' + nombre + '"/></svg>';
+}
+
+function avisoSync(icono, texto) {
+  estado.innerHTML = ico(icono) + " " + texto;
+}
