@@ -26,10 +26,11 @@ function formatoTiempo(min) {
   return h > 0 ? h + " h " + m + " min" : m + " min";
 }
 
-function tarjeta(etiqueta, clase, detalle) {
+function tarjeta(etiqueta, clase, detalle, progreso) {
   return `<small>${etiqueta}</small>
     <h2>${clase.materia}</h2>
     <p>${clase.profe} · ${detalle}</p>
+    ${progreso === undefined ? "" : '<div class="barra"><i style="width:' + progreso + '%"></i></div>'}
     <a class="boton" href="${clase.enlace}" target="_blank" rel="noopener noreferrer">Abrir aula</a>`;
 }
 
@@ -49,10 +50,10 @@ function actualizar() {
   const minutos = ahora.getHours() * 60 + ahora.getMinutes();
 
   document.getElementById("fecha").textContent =
-    ahora.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" });
+    mayuscula(ahora.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" }));
 
   // Marcar día de hoy y clase actual en la tabla
-  document.querySelectorAll("thead th").forEach((th, i) => th.classList.toggle("hoy", i === dia));
+  document.querySelectorAll("thead th").forEach((th, i) => th.classList.toggle("hoy", i === dia && dia >= 1 && dia <= 5));
   const actual = clases.find(c => c.dia === dia && minutos >= c.ini && minutos < c.fin);
   clases.forEach(c => c.td.classList.toggle("ahora", c === actual));
 
@@ -61,7 +62,7 @@ function actualizar() {
 
   if (actual) {
     panelAhora.className = "panel " + actual.color;
-    panelAhora.innerHTML = tarjeta("Ahora", actual, "termina en " + formatoTiempo(actual.fin - minutos));
+    panelAhora.innerHTML = tarjeta("Ahora", actual, "termina en " + formatoTiempo(actual.fin - minutos), Math.round((minutos - actual.ini) / (actual.fin - actual.ini) * 100));
   } else if (dia >= 1 && dia <= 5 && minutos >= 660 && minutos < 690) {
     panelAhora.className = "panel";
     panelAhora.innerHTML = `<small>Ahora</small><h2>☕ Recreo</h2><p>Vuelves a clase en ${formatoTiempo(690 - minutos)}</p>`;
@@ -309,7 +310,7 @@ function pintarCalendario() {
   const dias = new Date(año, mes + 1, 0).getDate();
 
   document.getElementById("mes-titulo").textContent =
-    mesVista.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+    mayuscula(mesVista.toLocaleDateString("es-ES", { month: "long", year: "numeric" }));
 
   let html = ["L", "M", "X", "J", "V", "S", "D"].map(d => `<div class="cal-nombre">${d}</div>`).join("");
   html += "<div></div>".repeat(huecos);
@@ -406,3 +407,58 @@ listaClase.addEventListener("click", e => {
 });
 
 pintarTodo();
+
+/* ---------- Detalles modernos ---------- */
+function mayuscula(texto) {
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+// Las casillas de la tabla aparecen una detrás de otra
+clases.forEach((c, i) => { c.td.style.animationDelay = (i * 45) + "ms"; });
+
+/* ---------- Vista por día para el móvil ---------- */
+const tabsDia = document.getElementById("tabs-dia");
+const cartasDia = document.getElementById("cartas-dia");
+const diaHoy = new Date().getDay();
+let diaVista = diaHoy >= 1 && diaHoy <= 5 ? diaHoy : 1;
+
+function marcarAhoraDia() {
+  const n = new Date();
+  const min = n.getHours() * 60 + n.getMinutes();
+  cartasDia.querySelectorAll(".carta-dia").forEach(el => {
+    el.classList.toggle("ahora", diaVista === n.getDay() && min >= Number(el.dataset.i) && min < Number(el.dataset.f));
+  });
+}
+
+function pintarVistaDia() {
+  tabsDia.innerHTML = ["L", "M", "X", "J", "V"].map((letra, i) =>
+    `<button type="button" data-d="${i + 1}" class="${i + 1 === diaVista ? "activo" : ""} ${i + 1 === diaHoy ? "hoy" : ""}">${letra}</button>`
+  ).join("");
+
+  const delDia = clases.filter(c => c.dia === diaVista).sort((a, b) => a.ini - b.ini);
+  let html = "";
+  let hayRecreo = false;
+  delDia.forEach((c, i) => {
+    if (!hayRecreo && c.ini >= 690) {
+      html += '<div class="carta-recreo">☕ Recreo · 11:00 – 11:30</div>';
+      hayRecreo = true;
+    }
+    html += `<div class="carta-dia" data-i="${c.ini}" data-f="${c.fin}" style="animation-delay:${i * 70}ms">
+      <div class="h">${c.td.dataset.ini}<br>${c.td.dataset.fin}</div>
+      <a class="${c.color}" href="${c.enlace}" target="_blank" rel="noopener noreferrer">
+        <strong>${c.siglas}</strong><span>${escapar(c.materia)} · ${escapar(c.profe)}</span>
+      </a></div>`;
+  });
+  cartasDia.innerHTML = html;
+  marcarAhoraDia();
+}
+
+tabsDia.addEventListener("click", e => {
+  if (e.target.dataset.d) {
+    diaVista = Number(e.target.dataset.d);
+    pintarVistaDia();
+  }
+});
+
+pintarVistaDia();
+setInterval(marcarAhoraDia, 30000);
