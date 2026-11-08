@@ -1,27 +1,58 @@
-// Conexión con Firebase (Firestore). Las tareas se guardan en
-// la colección "horarios", en un documento con el nombre de tu código.
+// Conexión con Firebase: tareas personales, avisos de clase y acceso de administradores
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc }
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, orderBy, addDoc, deleteDoc }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseConfig } from "./firebase-config.js";
 
-// Si no has pegado tu configuración, la nube queda desactivada
 export const nubeDisponible = !firebaseConfig.apiKey.startsWith("PEGA");
 
 let db = null;
+let auth = null;
 if (nubeDisponible) {
-  db = getFirestore(initializeApp(firebaseConfig));
+  const app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
 }
 
-// Avisa cada vez que cambian las tareas en la nube
+/* ----- Tareas personales (cajón con tu código secreto) ----- */
 export function escuchar(codigo, alCambiar, alFallar) {
   return onSnapshot(doc(db, "horarios", codigo), snap => {
-    const datos = snap.exists() ? snap.data().tareas : null;
-    alCambiar(datos, snap.metadata.hasPendingWrites);
+    alCambiar(snap.exists() ? snap.data().tareas : null, snap.metadata.hasPendingWrites);
   }, alFallar);
 }
 
-// Guarda la lista completa de tareas
 export function guardar(codigo, tareas) {
   return setDoc(doc(db, "horarios", codigo), { tareas: tareas });
+}
+
+/* ----- Avisos de clase (todos leen, solo los administradores escriben) ----- */
+export function escucharClase(alCambiar, alFallar) {
+  const consulta = query(collection(db, "clase"), orderBy("fecha"));
+  return onSnapshot(consulta, snap => {
+    alCambiar(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  }, alFallar);
+}
+
+export const crearEvento = evento => addDoc(collection(db, "clase"), evento);
+export const borrarEvento = id => deleteDoc(doc(db, "clase", id));
+
+/* ----- Acceso con Google ----- */
+export const entrar = () => signInWithPopup(auth, new GoogleAuthProvider());
+export const salir = () => signOut(auth);
+
+// Avisa al entrar o salir un usuario y dice si es administrador
+// (la lista está en Firestore: config/admins → emails)
+export function alCambiarUsuario(callback) {
+  return onAuthStateChanged(auth, async usuario => {
+    let admin = false;
+    if (usuario) {
+      try {
+        const lista = await getDoc(doc(db, "config", "admins"));
+        admin = lista.exists() && (lista.data().emails || []).includes(usuario.email);
+      } catch (e) { /* sin permiso: no es admin */ }
+    }
+    callback(usuario, admin);
+  });
 }

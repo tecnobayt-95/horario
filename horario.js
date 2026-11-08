@@ -149,7 +149,7 @@ function guardarTareas() {
   }
 }
 
-function pintarTareas() {
+function pintarListaTareas() {
   if (tareas.length === 0) {
     listaTareas.innerHTML = `<li class="vacio">No tienes tareas pendientes 🎉</li>`;
     return;
@@ -171,6 +171,11 @@ function pintarTareas() {
       <button data-borrar="${i}" title="Borrar">✕</button>
     </li>`;
   }).join("");
+}
+
+function pintarTareas() {
+  pintarListaTareas();
+  document.dispatchEvent(new Event("tareas-cambiadas"));
 }
 
 document.getElementById("form-tarea").addEventListener("submit", e => {
@@ -244,6 +249,7 @@ import("./nube.js").then(modulo => {
     estado.textContent = "Solo en este dispositivo (falta configurar Firebase)";
     return;
   }
+  iniciarClase();
   if (codigoSync) {
     campoCodigo.value = codigoSync;
     conectar(codigoSync);
@@ -260,3 +266,143 @@ document.getElementById("generar").addEventListener("click", () => {
   const bytes = crypto.getRandomValues(new Uint8Array(24));
   campoCodigo.value = [...bytes].map(b => letras[b % letras.length]).join("");
 });
+
+/* ---------- Calendario y avisos de clase ---------- */
+const calGrid = document.getElementById("cal-grid");
+const listaClase = document.getElementById("lista-clase");
+const listaTitulo = document.getElementById("lista-titulo");
+const formAdmin = document.getElementById("form-admin");
+const acceso = document.getElementById("acceso");
+const materiaAdmin = document.getElementById("materia-admin");
+materiaAdmin.innerHTML = selectMateria.innerHTML;
+
+let mesVista = new Date();
+mesVista.setDate(1);
+let eventosClase = [];
+let diaSel = null;
+let usuario = null;
+let esAdmin = false;
+
+const ISO = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const formatoFecha = f => f.split("-").reverse().join("/");
+
+// Valida lo que llega de la nube antes de mostrarlo
+function limpiarEventos(lista) {
+  return lista
+    .filter(e => (e.tipo === "tarea" || e.tipo === "examen") && typeof e.titulo === "string" && /^\d{4}-\d{2}-\d{2}$/.test(e.fecha))
+    .map(e => ({ id: e.id, tipo: e.tipo, titulo: e.titulo.slice(0, 100), materia: unicas[e.materia] ? e.materia : "", fecha: e.fecha }));
+}
+
+// Avisos de la clase + tus tareas personales con fecha
+function todosLosEventos() {
+  const mias = tareas.filter(t => t.fecha && !t.hecha)
+    .map(t => ({ id: null, tipo: "personal", titulo: t.texto, materia: t.materia, fecha: t.fecha }));
+  return eventosClase.concat(mias).sort((a, b) => a.fecha.localeCompare(b.fecha));
+}
+
+function pintarCalendario() {
+  const todos = todosLosEventos();
+  const año = mesVista.getFullYear();
+  const mes = mesVista.getMonth();
+  const hoy = ISO(new Date());
+  const huecos = (new Date(año, mes, 1).getDay() + 6) % 7;   // la semana empieza en lunes
+  const dias = new Date(año, mes + 1, 0).getDate();
+
+  document.getElementById("mes-titulo").textContent =
+    mesVista.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+
+  let html = ["L", "M", "X", "J", "V", "S", "D"].map(d => `<div class="cal-nombre">${d}</div>`).join("");
+  html += "<div></div>".repeat(huecos);
+  for (let d = 1; d <= dias; d++) {
+    const f = año + "-" + String(mes + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+    const marcas = todos.filter(e => e.fecha === f).slice(0, 4)
+      .map(e => `<i class="${e.tipo} ${e.materia}"></i>`).join("");
+    html += `<button type="button" class="cal-celda${f === hoy ? " hoy" : ""}${f === diaSel ? " sel" : ""}" data-f="${f}">
+      <span>${d}</span><div class="marcas">${marcas}</div></button>`;
+  }
+  calGrid.innerHTML = html;
+}
+
+function pintarListaClase() {
+  const todos = todosLosEventos();
+  let items;
+  if (diaSel) {
+    items = todos.filter(e => e.fecha === diaSel);
+    listaTitulo.textContent = "Día " + formatoFecha(diaSel);
+  } else {
+    const hoy = ISO(new Date());
+    items = todos.filter(e => e.fecha >= hoy).slice(0, 10);
+    listaTitulo.textContent = "Próximos avisos";
+  }
+  if (items.length === 0) {
+    listaClase.innerHTML = '<li class="vacio">Nada para este periodo 🎉</li>';
+    return;
+  }
+  const nombres = { examen: "📝 Examen", tarea: "📌 Tarea", personal: "🙋 Mía" };
+  listaClase.innerHTML = items.map(e => `<li class="${e.tipo}">
+    <span class="etiqueta ${e.materia}">${e.materia || "—"}</span>
+    <span class="txt"><b>${nombres[e.tipo]}</b> ${escapar(e.titulo)}</span>
+    <span class="fecha">${formatoFecha(e.fecha)}</span>
+    ${esAdmin && e.id ? `<button data-id="${e.id}" title="Borrar">✕</button>` : ""}
+  </li>`).join("");
+}
+
+function pintarTodo() {
+  pintarCalendario();
+  pintarListaClase();
+}
+
+function pintarAcceso() {
+  acceso.innerHTML = usuario
+    ? `<span>${escapar(usuario.email)}${esAdmin ? " · administrador" : ""}</span> <button id="btn-salir" type="button">Salir</button>`
+    : '<button id="btn-entrar" type="button">🔐 Acceso administrador</button>';
+  formAdmin.hidden = !esAdmin;
+}
+
+function iniciarClase() {
+  nube.escucharClase(lista => {
+    eventosClase = limpiarEventos(lista);
+    pintarTodo();
+  }, () => {});
+  nube.alCambiarUsuario((user, admin) => {
+    usuario = user;
+    esAdmin = admin;
+    pintarAcceso();
+    pintarTodo();
+  });
+}
+
+document.addEventListener("tareas-cambiadas", pintarTodo);
+
+document.getElementById("mes-ant").addEventListener("click", () => { mesVista.setMonth(mesVista.getMonth() - 1); pintarCalendario(); });
+document.getElementById("mes-sig").addEventListener("click", () => { mesVista.setMonth(mesVista.getMonth() + 1); pintarCalendario(); });
+
+calGrid.addEventListener("click", e => {
+  const celda = e.target.closest(".cal-celda");
+  if (!celda) return;
+  diaSel = diaSel === celda.dataset.f ? null : celda.dataset.f;
+  pintarTodo();
+});
+
+acceso.addEventListener("click", e => {
+  if (e.target.id === "btn-entrar") nube.entrar().catch(() => alert("No se pudo iniciar sesión."));
+  if (e.target.id === "btn-salir") nube.salir();
+});
+
+formAdmin.addEventListener("submit", e => {
+  e.preventDefault();
+  nube.crearEvento({
+    tipo: document.getElementById("tipo-admin").value,
+    titulo: document.getElementById("titulo-admin").value.trim(),
+    materia: materiaAdmin.value,
+    fecha: document.getElementById("fecha-admin").value
+  }).then(() => formAdmin.reset())
+    .catch(() => alert("No tienes permiso para crear avisos."));
+});
+
+listaClase.addEventListener("click", e => {
+  const id = e.target.dataset.id;
+  if (id && confirm("¿Borrar este aviso para toda la clase?")) nube.borrarEvento(id);
+});
+
+pintarTodo();

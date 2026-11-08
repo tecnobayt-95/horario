@@ -233,3 +233,36 @@ td.clase.ahora { outline: 4px solid var(--texto); outline-offset: 2px; }
 #sync input { flex: 1; min-width: 200px; }
 #sync button { cursor: pointer; }
 #estado-sync { font-size: 13px; color: var(--suave); }
+
+/* ---------- Calendario ---------- */
+.calendario { margin-top: 24px; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 20px; padding: 18px; }
+.cal-cab { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.cal-cab h2, .calendario h3 { margin: 0; }
+.calendario h3 { margin: 16px 0 10px; font-size: 16px; }
+#acceso { font-size: 13px; color: var(--suave); display: flex; align-items: center; gap: 8px; }
+.calendario button, .calendario select, .calendario input {
+  font: inherit; padding: 8px 12px; border-radius: 10px;
+  border: 1px solid var(--borde); background: var(--fondo); color: var(--texto);
+}
+.calendario button { cursor: pointer; }
+.cal-mes { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 12px 0; text-transform: capitalize; }
+#cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-nombre { text-align: center; font-size: 12px; color: var(--suave); font-weight: 600; }
+.cal-celda { min-height: 54px; padding: 6px 4px !important; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.cal-celda.hoy { border-color: var(--acento); font-weight: 700; }
+.cal-celda.sel { background: var(--acento) !important; color: #fff !important; }
+.marcas { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; }
+.marcas i { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--suave)); }
+.marcas i.examen { border-radius: 2px; outline: 2px solid #e53935; }
+.marcas i.personal { opacity: .5; }
+#lista-clase { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+#lista-clase li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--fondo); }
+#lista-clase li.examen { border-left: 5px solid #e53935; }
+#lista-clase .txt { flex: 1; }
+#lista-clase .fecha { color: var(--suave); font-size: 13px; }
+#lista-clase button { border: 0; background: none; color: var(--suave); font-size: 18px; }
+.etiqueta { background: var(--c, var(--suave)); }
+#form-admin { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 14px; border-top: 1px dashed var(--borde); }
+#form-admin[hidden] { display: none; }
+#titulo-admin { flex: 1; min-width: 180px; }
+#form-admin button { background: var(--acento); color: #fff; border: 0; font-weight: 600; }

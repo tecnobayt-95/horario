@@ -97,6 +97,28 @@
     </table>
   </div>
 
+  <section class="calendario">
+    <div class="cal-cab">
+      <h2>📅 Calendario</h2>
+      <span id="acceso"></span>
+    </div>
+    <div class="cal-mes">
+      <button id="mes-ant" type="button">‹</button>
+      <strong id="mes-titulo"></strong>
+      <button id="mes-sig" type="button">›</button>
+    </div>
+    <div id="cal-grid"></div>
+    <h3 id="lista-titulo"></h3>
+    <ul id="lista-clase"></ul>
+    <form id="form-admin" hidden>
+      <select id="tipo-admin"><option value="examen">📝 Examen</option><option value="tarea">📌 Tarea</option></select>
+      <input id="titulo-admin" type="text" placeholder="Título del aviso" maxlength="100" required>
+      <select id="materia-admin"></select>
+      <input id="fecha-admin" type="date" required>
+      <button type="submit">Publicar</button>
+    </form>
+  </section>
+
   <section class="tareas">
     <h2>📝 Tareas pendientes</h2>
     <div id="sync">
