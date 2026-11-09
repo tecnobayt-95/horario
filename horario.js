@@ -356,7 +356,7 @@ function pintarTodo() {
 function pintarAcceso() {
   acceso.innerHTML = usuario
     ? `<span class="rol">${ico(esAdmin ? "escudo" : "usuario")} ${escapar(usuario.email)}${esAdmin ? " · administrador" : ""}</span> <button id="btn-salir" type="button">${ico("salir")} Salir</button>`
-    : `<button id="btn-entrar" type="button">${ico("entrar")} Acceso administrador</button>`;
+    : `<button id="btn-entrar" type="button">${ico("entrar")} Iniciar sesión</button>`;
   formAdmin.hidden = !esAdmin;
 }
 
@@ -370,6 +370,7 @@ function iniciarClase() {
     esAdmin = admin;
     pintarAcceso();
     pintarTodo();
+    actualizarChat();
   });
 }
 
@@ -471,3 +472,126 @@ function ico(nombre) {
 function avisoSync(icono, texto) {
   estado.innerHTML = ico(icono) + " " + texto;
 }
+
+/* ---------- Comunidad: chat ---------- */
+const chatMensajes = document.getElementById("chat-mensajes");
+const chatBloqueo = document.getElementById("chat-bloqueo");
+const chatZona = document.getElementById("chat-zona");
+const chatForm = document.getElementById("chat-form");
+const chatTexto = document.getElementById("chat-texto");
+
+let dejarChat = null;
+let ultimaLista = [];
+let primeraCarga = true;
+let bajarSiguiente = false;
+let ultimoEnvio = 0;
+const vistos = new Set();
+
+function colorUsuario(uid) {
+  let h = 0;
+  for (const letra of uid) h = (h * 31 + letra.charCodeAt(0)) % 360;
+  return h;
+}
+
+// Valida lo que llega de la nube antes de mostrarlo
+function limpiarMensajes(lista) {
+  return lista
+    .filter(m => /^[A-Za-z0-9]{1,40}$/.test(m.id) && typeof m.uid === "string" && typeof m.nombre === "string"
+      && typeof m.texto === "string" && m.fecha && typeof m.fecha.toDate === "function")
+    .map(m => ({ id: m.id, uid: m.uid, nombre: m.nombre.slice(0, 40), texto: m.texto.slice(0, 500), fecha: m.fecha.toDate() }));
+}
+
+function horaMensaje(f) {
+  const hora = f.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  return f.toDateString() === new Date().toDateString()
+    ? hora
+    : f.toLocaleDateString("es-ES", { day: "numeric", month: "short" }) + " " + hora;
+}
+
+function pintarMensajes(lista) {
+  ultimaLista = lista;
+  const abajo = chatMensajes.scrollHeight - chatMensajes.scrollTop - chatMensajes.clientHeight < 80;
+  const eraPrimera = primeraCarga;
+
+  chatMensajes.innerHTML = lista.length === 0
+    ? `<div class="vacio">${ico("mensaje")} Sé el primero en escribir</div>`
+    : lista.map(m => {
+        const mio = usuario && m.uid === usuario.uid;
+        const nuevo = !eraPrimera && !vistos.has(m.id) ? " nuevo" : "";
+        const borrar = (mio || esAdmin) ? `<button data-id="${m.id}" title="Borrar">${ico("x")}</button>` : "";
+        return `<div class="msg${mio ? " mio" : ""}${nuevo}">
+          ${mio ? "" : `<div class="avatar" style="--h:${colorUsuario(m.uid)}">${escapar(m.nombre.charAt(0).toUpperCase())}</div>`}
+          <div class="burbuja">
+            ${mio ? "" : `<b>${escapar(m.nombre)}</b>`}
+            <p>${escapar(m.texto)}</p>
+            <small>${horaMensaje(m.fecha)}${borrar}</small>
+          </div></div>`;
+      }).join("");
+
+  lista.forEach(m => vistos.add(m.id));
+  primeraCarga = false;
+  if (abajo || eraPrimera || bajarSiguiente) {
+    chatMensajes.scrollTop = chatMensajes.scrollHeight;
+    bajarSiguiente = false;
+  }
+}
+
+// Se llama cada vez que alguien entra o sale
+function actualizarChat() {
+  const dentro = !!usuario;
+  chatBloqueo.hidden = dentro;
+  chatZona.hidden = !dentro;
+  if (dentro && !dejarChat) {
+    dejarChat = nube.escucharMensajes(l => pintarMensajes(limpiarMensajes(l)), () => {
+      chatMensajes.innerHTML = `<div class="vacio">${ico("alerta")} No se pudo cargar el chat</div>`;
+    });
+  } else if (dentro) {
+    pintarMensajes(ultimaLista);      // por si ha cambiado el permiso de administrador
+  } else if (dejarChat) {
+    dejarChat();
+    dejarChat = null;
+    chatMensajes.innerHTML = "";
+    vistos.clear();
+    primeraCarga = true;
+  }
+}
+
+document.getElementById("chat-entrar").addEventListener("click", () => {
+  if (!nube || !nube.nubeDisponible) {
+    alert("El chat necesita la conexión con la nube.");
+    return;
+  }
+  nube.entrar().catch(() => alert("No se pudo iniciar sesión."));
+});
+
+chatForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const texto = chatTexto.value.trim();
+  if (!texto || Date.now() - ultimoEnvio < 1500) return;   // máximo un mensaje cada 1,5 s
+  ultimoEnvio = Date.now();
+  chatTexto.value = "";
+  bajarSiguiente = true;
+  nube.enviarMensaje(texto).catch(() => {
+    alert("No se pudo enviar el mensaje.");
+    chatTexto.value = texto;
+  });
+});
+
+chatMensajes.addEventListener("click", e => {
+  const id = e.target.dataset.id;
+  if (id && confirm("¿Borrar este mensaje?")) nube.borrarMensaje(id);
+});
+
+/* ---------- Menú: cada apartado es una "vista" ---------- */
+const VISTAS = ["horario", "calendario", "tareas", "comunidad"];
+
+function mostrarVista() {
+  let nombre = location.hash.slice(1);
+  if (!VISTAS.includes(nombre)) nombre = "horario";
+  document.querySelectorAll(".vista").forEach(v => v.classList.toggle("activa", v.id === "v-" + nombre));
+  document.querySelectorAll(".menu a").forEach(a => a.classList.toggle("activo", a.getAttribute("href") === "#" + nombre));
+  if (nombre === "comunidad") chatMensajes.scrollTop = chatMensajes.scrollHeight;
+}
+
+window.addEventListener("hashchange", () => { mostrarVista(); window.scrollTo(0, 0); });
+mostrarVista();

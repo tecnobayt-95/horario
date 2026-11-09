@@ -30,6 +30,11 @@
   <symbol id="i-izq" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
   <symbol id="i-der" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
   <symbol id="i-flecha" viewBox="0 0 24 24"><path d="M7 7h10v10M7 17 17 7"/></symbol>
+  <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-usuarios" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-enviar" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+  <symbol id="i-candado" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-mensaje" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
 </svg>
 <main>
 
@@ -41,7 +46,15 @@
     <button id="tema" type="button"></button>
   </header>
 
+  <nav class="menu" aria-label="Menú principal">
+    <a href="#horario"><svg class="ico" aria-hidden="true"><use href="#i-reloj"/></svg><span>Horario</span></a>
+    <a href="#calendario"><svg class="ico" aria-hidden="true"><use href="#i-calendario"/></svg><span>Calendario</span></a>
+    <a href="#tareas"><svg class="ico" aria-hidden="true"><use href="#i-lista"/></svg><span>Tareas</span></a>
+    <a href="#comunidad"><svg class="ico" aria-hidden="true"><use href="#i-usuarios"/></svg><span>Comunidad</span></a>
+  </nav>
+
   <!-- Los rellena horario.js -->
+  <div class="vista activa" id="v-horario">
   <section class="paneles">
     <div class="panel" id="ahora"></div>
     <div class="panel" id="siguiente"></div>
@@ -126,6 +139,9 @@
     </table>
   </div>
 
+  </div>
+
+  <div class="vista" id="v-calendario">
   <section class="calendario">
     <div class="cal-cab">
       <h2><svg class="ico" aria-hidden="true"><use href="#i-calendario"/></svg> Calendario</h2>
@@ -148,6 +164,9 @@
     </form>
   </section>
 
+  </div>
+
+  <div class="vista" id="v-tareas">
   <section class="tareas">
     <h2><svg class="ico" aria-hidden="true"><use href="#i-lista"/></svg> Tareas pendientes</h2>
     <div id="sync">
@@ -164,6 +183,45 @@
     </form>
     <ul id="lista-tareas"></ul>
   </section>
+  </div>
+
+  <div class="vista" id="v-comunidad">
+    <section class="chat">
+      <div class="chat-cab">
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-usuarios"/></svg> Comunidad</h2>
+        <p>Chat de la clase. Sé amable y respeta a los demás.</p>
+      </div>
+      <div id="chat-bloqueo" class="chat-bloqueo">
+        <svg class="ico" aria-hidden="true"><use href="#i-candado"/></svg>
+        <p>Inicia sesión con Google para ver y escribir en el chat. Tu nombre será visible para el resto.</p>
+        <button id="chat-entrar" type="button"><svg class="ico" aria-hidden="true"><use href="#i-entrar"/></svg> Entrar con Google</button>
+      </div>
+      <div id="chat-zona" hidden>
+        <div id="chat-mensajes" aria-live="polite"></div>
+        <form id="chat-form">
+          <input id="chat-texto" type="text" maxlength="500" placeholder="Escribe un mensaje..." autocomplete="off" required>
+          <button type="submit" aria-label="Enviar"><svg class="ico" aria-hidden="true"><use href="#i-enviar"/></svg></button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <footer class="pie">
+    <div class="pie-marca">
+      <img src="favicon.svg" alt="" width="40" height="40">
+      <div>
+        <strong>Horario de clase 26/27</strong>
+        <p>Horario, calendario, tareas y comunidad en un solo sitio.</p>
+      </div>
+    </div>
+    <div class="pie-links">
+      <a href="#horario">Horario</a>
+      <a href="#calendario">Calendario</a>
+      <a href="#tareas">Tareas</a>
+      <a href="#comunidad">Comunidad</a>
+    </div>
+    <p class="pie-nota">Proyecto de clase · Curso 2026/27 · Hecho con HTML, CSS, JavaScript y Firebase</p>
+  </footer>
 
 </main>
 <script src="horario.js"></script>

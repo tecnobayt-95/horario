@@ -1,6 +1,6 @@
 // Conexión con Firebase: tareas personales, avisos de clase y acceso de administradores
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, orderBy, addDoc, deleteDoc }
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, orderBy, limit, serverTimestamp, addDoc, deleteDoc }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -56,3 +56,25 @@ export function alCambiarUsuario(callback) {
     callback(usuario, admin);
   });
 }
+
+/* ----- Comunidad: chat (hay que haber iniciado sesión) ----- */
+export function escucharMensajes(alCambiar, alFallar) {
+  const consulta = query(collection(db, "mensajes"), orderBy("fecha", "desc"), limit(100));
+  return onSnapshot(consulta, snap => {
+    alCambiar(snap.docs
+      .map(d => ({ id: d.id, ...d.data({ serverTimestamps: "estimate" }) }))
+      .reverse());
+  }, alFallar);
+}
+
+export function enviarMensaje(texto) {
+  const u = auth.currentUser;
+  return addDoc(collection(db, "mensajes"), {
+    uid: u.uid,
+    nombre: (u.displayName || "Alumno").slice(0, 40),
+    texto: texto,
+    fecha: serverTimestamp()
+  });
+}
+
+export const borrarMensaje = id => deleteDoc(doc(db, "mensajes", id));
