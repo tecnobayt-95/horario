@@ -632,15 +632,15 @@ main > .vista { animation-delay: 0s; }
   --verde: #7ee787;
 }
 
-/* Colores de cada asignatura (tonos tradicionales japoneses) */
-.ITK { --c: #7a4a9e; }                  /* murasaki: morado */
-.SSF { --c: #25508f; }                  /* ruri: azul índigo */
-.BAE { --c: #3f9468; }                  /* wakaba: verde matcha */
-.ETD { --c: #e0802e; }                  /* kaki: naranja caqui */
-.PRO { --c: #9e2a35; }                  /* enji: carmesí */
-.DJK { --c: #2a8a9a; }                  /* asagi: turquesa */
-.LMI { --c: #d98ba0; --t: #3a1220; }    /* sakura: rosa cerezo */
-.ING { --c: #e3c367; --t: #2b2200; }    /* kihada: dorado */
+/* Color de cada asignatura: sale como franja en las tarjetas oscuras (--c) */
+.ITK { --c: #c43d78; }
+.SSF { --c: #4f7fd6; }
+.BAE { --c: #3fae7c; }
+.ETD { --c: #e0802e; }
+.PRO { --c: #d0404f; }
+.DJK { --c: #3aa5b5; }
+.LMI { --c: #c78ad0; --t: #2a1330; }
+.ING { --c: #e3c367; --t: #2b2200; }
 
 body {
   font-family: system-ui, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", Roboto, sans-serif;
@@ -713,4 +713,35 @@ td.clase { border-radius: 10px; background: linear-gradient(160deg, color-mix(in
 @media (max-width: 720px) {
   body::after, .menu small { display: none; }
   .sello { width: 46px; height: 46px; font-size: 17px; }
+}
+
+/* =====================================================
+   ESTILO "SUMI Y FRANJA": tarjetas oscuras con franja de color
+   ===================================================== */
+:root { --carta: #23252d; --carta-texto: #ece8df; --carta-suave: #a8a49a; }
+[data-tema="oscuro"] { --carta: #232630; }
+
+td.clase {
+  background: var(--carta);
+  border-radius: 6px;
+  box-shadow: inset 6px 0 0 var(--c);
+}
+td.clase a { color: var(--carta-texto); padding-left: 14px; }
+td.clase small { color: var(--carta-suave); opacity: 1; }
+td.clase:hover { box-shadow: inset 6px 0 0 var(--c), 0 8px 18px rgba(0, 0, 0, .3); }
+td.clase.ahora { outline: 1px solid var(--c); animation: pop .5s backwards, brillo-franja 2s 1s infinite; }
+
+.carta-dia a {
+  background: var(--carta);
+  color: var(--carta-texto);
+  border-radius: 10px;
+  padding-left: 22px;
+  box-shadow: inset 6px 0 0 var(--c), 0 8px 20px rgba(0, 0, 0, .18);
+}
+.carta-dia span { color: var(--carta-suave); opacity: 1; }
+.carta-dia.ahora a { outline: 1px solid var(--c); animation: brillo-franja 2s infinite; }
+
+@keyframes brillo-franja {
+  0%, 100% { box-shadow: inset 6px 0 0 var(--c), 0 0 0 0 color-mix(in srgb, var(--c) 55%, transparent); }
+  50% { box-shadow: inset 6px 0 0 var(--c), 0 0 0 10px transparent; }
 }
