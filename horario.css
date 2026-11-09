@@ -632,15 +632,15 @@ main > .vista { animation-delay: 0s; }
   --verde: #7ee787;
 }
 
-/* Colores de cada asignatura (tonos tradicionales) */
-.ITK { --c: #c43d78; }
-.SSF { --c: #2f4f93; }
-.BAE { --c: #3d8b6d; }
-.ETD { --c: #d9792b; }
-.PRO { --c: #a8232f; }
-.DJK { --c: #51717f; }
-.LMI { --c: #5b8cae; }
-.ING { --c: #e3c367; --t: #2b2200; }
+/* Colores de cada asignatura (tonos tradicionales japoneses) */
+.ITK { --c: #7a4a9e; }                  /* murasaki: morado */
+.SSF { --c: #25508f; }                  /* ruri: azul índigo */
+.BAE { --c: #3f9468; }                  /* wakaba: verde matcha */
+.ETD { --c: #e0802e; }                  /* kaki: naranja caqui */
+.PRO { --c: #9e2a35; }                  /* enji: carmesí */
+.DJK { --c: #2a8a9a; }                  /* asagi: turquesa */
+.LMI { --c: #d98ba0; --t: #3a1220; }    /* sakura: rosa cerezo */
+.ING { --c: #e3c367; --t: #2b2200; }    /* kihada: dorado */
 
 body {
   font-family: system-ui, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", Roboto, sans-serif;
