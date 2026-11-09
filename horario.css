@@ -600,3 +600,117 @@ main > .vista { animation-delay: 0s; }
   .msg { max-width: 92%; }
   .pie { grid-template-columns: 1fr; }
 }
+
+/* =====================================================
+   TEMA JAPONÉS + INFORMÁTICA
+   Colores tradicionales: washi (papel), sumi (tinta),
+   shu (bermellón), ai (índigo) y verde de terminal.
+   Para cambiar la paleta basta con tocar estas variables.
+   ===================================================== */
+:root {
+  --fondo: #f2ece0;
+  --tarjeta: #fbf8f1;
+  --texto: #1b1a1f;
+  --suave: #6e675c;
+  --borde: #ddd2bd;
+  --cabecera: #ece3d2;
+  --acento: #e5492c;
+  --acento2: #b81d3a;
+  --verde: #2f9e6b;
+  --vidrio: color-mix(in srgb, var(--tarjeta) 90%, transparent);
+  --mono: ui-monospace, "JetBrains Mono", "Cascadia Code", "Fira Code", SFMono-Regular, Menlo, Consolas, monospace;
+}
+[data-tema="oscuro"] {
+  --fondo: #0d0e12;
+  --tarjeta: #16171d;
+  --texto: #ebe6da;
+  --suave: #9a958a;
+  --borde: #2a2c35;
+  --cabecera: #21232c;
+  --acento: #ff6a4d;
+  --acento2: #e0365a;
+  --verde: #7ee787;
+}
+
+/* Colores de cada asignatura (tonos tradicionales) */
+.ITK { --c: #c43d78; }
+.SSF { --c: #2f4f93; }
+.BAE { --c: #3d8b6d; }
+.ETD { --c: #d9792b; }
+.PRO { --c: #a8232f; }
+.DJK { --c: #51717f; }
+.LMI { --c: #5b8cae; }
+.ING { --c: #e3c367; --t: #2b2200; }
+
+body {
+  font-family: system-ui, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", Roboto, sans-serif;
+  background: var(--fondo) radial-gradient(color-mix(in srgb, var(--texto) 10%, transparent) 1px, transparent 1px) 0 0 / 24px 24px;
+}
+/* Sol rojo y brillo índigo */
+body::before {
+  inset: 0; animation: none;
+  background:
+    radial-gradient(circle at 90% -6%, color-mix(in srgb, var(--acento) 28%, transparent) 0, transparent 34%),
+    radial-gradient(circle at 4% 106%, color-mix(in srgb, #264a73 26%, transparent) 0, transparent 38%);
+}
+/* Kanji decorativo: 情報 = informática */
+body::after {
+  content: "情報"; position: fixed; right: 18px; top: 150px; z-index: -1; pointer-events: none;
+  writing-mode: vertical-rl; letter-spacing: .12em; font-weight: 900; color: var(--acento); opacity: .06;
+  font-size: clamp(80px, 12vw, 150px);
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+}
+::selection { background: var(--acento); color: #fff; }
+* { scrollbar-width: thin; scrollbar-color: var(--acento) transparent; }
+
+/* Cabecera: sello hanko + línea de terminal */
+.titulo-bloque { display: flex; align-items: center; gap: 16px; }
+.sello {
+  width: 54px; height: 54px; flex: none; display: grid; place-items: center; text-align: center;
+  background: var(--acento); color: #fff; border-radius: 6px; font-weight: 900; font-size: 20px; line-height: 1.1;
+  transform: rotate(-4deg);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .25), 0 6px 14px color-mix(in srgb, var(--acento) 35%, transparent);
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+}
+.prompt { margin: 0 0 4px; font-family: var(--mono); font-size: 12px; color: var(--suave); }
+.prompt span { color: var(--acento); font-weight: 700; }
+.prompt i { display: inline-block; width: 7px; height: 13px; margin-left: 4px; vertical-align: -2px; background: var(--verde); animation: parpadeo 1s steps(1) infinite; }
+@keyframes parpadeo { 50% { opacity: 0; } }
+h1 { font-weight: 800; letter-spacing: -.02em; }
+#fecha { font-family: var(--mono); font-size: 13px; }
+
+/* Tarjetas más nítidas y sobrias */
+.panel, .contenedor, .calendario, .tareas, .chat, .pie { border-radius: 18px; }
+.pie { border-top: 3px solid var(--acento); }
+td.clase { border-radius: 10px; background: linear-gradient(160deg, color-mix(in srgb, var(--c) 90%, white), var(--c)); }
+.carta-dia a { border-radius: 16px; }
+
+/* Texto técnico en monoespaciada */
+.hora, .num, th.t, .fecha, .etiqueta, #estado-sync, .panel small, .cal-nombre, .burbuja small,
+.burbuja b, .pie-nota, .rol, .menu small, #chat-texto, .carta-dia .h { font-family: var(--mono); }
+#ahora small::after { content: " · 今"; }
+#siguiente small::after { content: " · 次"; }
+#ahora small::before { background: var(--verde); }
+.pie-nota::before { content: "// "; color: var(--acento); }
+
+/* Menú con kanji */
+.menu small { font-size: 10px; opacity: .6; font-weight: 500; }
+.menu a.activo small { opacity: .85; }
+
+/* Títulos de sección con sello y kanji */
+.calendario h2 .ico, .tareas h2 .ico, .chat h2 .ico { border-radius: 6px; background: var(--acento); box-shadow: none; }
+.calendario h2::after, .tareas h2::after, .chat h2::after {
+  font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--suave);
+  border: 1px solid var(--borde); border-radius: 4px; padding: 2px 8px;
+}
+.calendario h2::after { content: "予定"; }
+.tareas h2::after { content: "課題"; }
+.chat h2::after { content: "掲示板"; }
+
+/* Chat: avatares cuadrados tipo sello */
+.avatar { border-radius: 8px; background: hsl(var(--h) 45% 46%); }
+
+@media (max-width: 720px) {
+  body::after, .menu small { display: none; }
+  .sello { width: 46px; height: 46px; font-size: 17px; }
+}

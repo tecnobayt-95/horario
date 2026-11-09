@@ -441,7 +441,7 @@ function pintarVistaDia() {
   let hayRecreo = false;
   delDia.forEach((c, i) => {
     if (!hayRecreo && c.ini >= 690) {
-      html += `<div class="carta-recreo">${ico("cafe")} Recreo · 11:00 – 11:30</div>`;
+      html += `<div class="carta-recreo">${ico("cafe")} 休憩 · Recreo · 11:00 – 11:30</div>`;
       hayRecreo = true;
     }
     html += `<div class="carta-dia" data-i="${c.ini}" data-f="${c.fin}" style="animation-delay:${i * 70}ms">
