@@ -745,3 +745,94 @@ td.clase.ahora { outline: 1px solid var(--c); animation: pop .5s backwards, bril
   0%, 100% { box-shadow: inset 6px 0 0 var(--c), 0 0 0 0 color-mix(in srgb, var(--c) 55%, transparent); }
   50% { box-shadow: inset 6px 0 0 var(--c), 0 0 0 10px transparent; }
 }
+
+/* =====================================================
+   REDISEÑO: EDITOR DE CÓDIGO (estilo IDE)
+   Ventana con barra de título, explorador de archivos,
+   pestañas, editor y barra de estado.
+   ===================================================== */
+body { background: var(--fondo); padding: 16px; }
+body::before, body::after { display: none; }
+
+/* Bloques del editor: planos, como bloques de código */
+.panel, .contenedor, .calendario, .tareas, .chat {
+  background: var(--fondo); backdrop-filter: none; -webkit-backdrop-filter: none;
+  border-radius: 6px; box-shadow: none; border: 1px solid var(--borde);
+}
+.panel::before { width: 4px; }
+
+/* Barra de título */
+h1 { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0; }
+h1 span { background: none; animation: none; color: var(--acento); -webkit-text-fill-color: currentColor; }
+h1::after { content: " — clase.code"; color: var(--suave); font-weight: 400; }
+.titulo {
+  display: flex; align-items: center; gap: 12px; margin: 0; padding: 9px 14px;
+  background: var(--cabecera); border-bottom: 1px solid var(--borde);
+}
+.titulo::before {
+  content: ""; flex: none; width: 12px; height: 12px; margin-right: 48px; border-radius: 50%;
+  background: #ff5f57; box-shadow: 20px 0 0 #febc2e, 40px 0 0 #28c840;
+}
+.titulo-bloque, .titulo-bloque > div:not(.sello) { display: contents; }
+.sello, .prompt { display: none; }
+#fecha { margin: 0 0 0 auto; font-size: 12px; }
+#tema { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+
+/* Pestañas (solo escritorio) */
+.pestanas { display: none; }
+.pestana {
+  display: flex; align-items: center; gap: 10px; padding: 0 18px;
+  background: var(--tarjeta); border-right: 1px solid var(--borde);
+  box-shadow: inset 0 2px 0 var(--acento); font: 13px var(--mono);
+}
+.pestana small { color: var(--suave); }
+
+/* Barra de estado */
+.pie {
+  display: flex; align-items: center; gap: 16px; height: 26px; margin: 0; padding: 0 14px;
+  background: var(--acento2); color: #fff; border: 0; border-radius: 0;
+  font: 12px var(--mono); backdrop-filter: none;
+}
+.pie-marca { display: contents; }
+.pie-marca img, .pie-marca p, .pie-links { display: none; }
+.pie-nota { margin: 0; padding: 0; border: 0; color: inherit; font-size: 12px; opacity: .85; }
+.pie-nota::before { content: ""; }
+.pie-der { margin-left: auto; display: flex; gap: 16px; }
+
+@media (min-width: 721px) {
+  main {
+    max-width: 1320px; height: calc(100dvh - 32px); margin: 0 auto; overflow: hidden;
+    display: grid; grid-template-columns: 230px 1fr; grid-template-rows: auto auto 1fr auto;
+    grid-template-areas: "top top" "side tabs" "side ed" "foot foot";
+    border: 1px solid var(--borde); border-radius: 12px; background: var(--tarjeta);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+  }
+  .titulo { grid-area: top; }
+  .pestanas { grid-area: tabs; display: flex; height: 36px; background: var(--cabecera); border-bottom: 1px solid var(--borde); }
+  .vista { grid-area: ed; min-height: 0; }
+  .vista.activa { overflow: auto; padding: 22px 26px; }
+  .pie { grid-area: foot; }
+
+  /* Menú = explorador de archivos */
+  nav.menu {
+    grid-area: side; flex-direction: column; gap: 2px; width: auto; margin: 0; padding: 12px 0;
+    position: static; border: 0; border-right: 1px solid var(--borde); border-radius: 0;
+    background: var(--cabecera); box-shadow: none; backdrop-filter: none;
+  }
+  nav.menu::before {
+    content: "EXPLORADOR"; padding: 2px 18px 12px; font: 600 11px var(--mono);
+    letter-spacing: .14em; color: var(--suave);
+  }
+  .menu a { gap: 10px; padding: 8px 18px; border-radius: 0; font: 13px var(--mono); font-weight: 500; }
+  .menu a.activo { background: var(--borde); color: var(--texto); box-shadow: inset 3px 0 0 var(--acento); }
+  .menu a small { font-size: 12px; opacity: .55; }
+}
+
+@media (max-width: 720px) {
+  body { padding: 12px 12px 110px; }
+  .titulo { position: sticky; top: 0; z-index: 30; border-radius: 10px; margin-bottom: 14px; border: 1px solid var(--borde); }
+  .titulo::before { display: none; }
+  #fecha { font-size: 11px; }
+  .pie { border-radius: 10px; margin-top: 24px; }
+  .pie-nota { display: none; }
+}

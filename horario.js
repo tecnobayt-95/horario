@@ -96,7 +96,7 @@ function ponerTema(tema) {
 
 const temaGuardado = localStorage.getItem("tema");
 const prefiereOscuro = window.matchMedia("(prefers-color-scheme: dark)").matches;
-ponerTema(temaGuardado || (prefiereOscuro ? "oscuro" : "claro"));
+ponerTema(temaGuardado || "oscuro");
 
 botonTema.addEventListener("click", () => {
   ponerTema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro");
@@ -591,7 +591,20 @@ function mostrarVista() {
   document.querySelectorAll(".vista").forEach(v => v.classList.toggle("activa", v.id === "v-" + nombre));
   document.querySelectorAll(".menu a").forEach(a => a.classList.toggle("activo", a.getAttribute("href") === "#" + nombre));
   if (nombre === "comunidad") chatMensajes.scrollTop = chatMensajes.scrollHeight;
+
+  // Pestaña del "editor"
+  const archivos = { horario: ["horario.json", "時間割"], calendario: ["calendario.md", "暦"], tareas: ["tareas.todo", "課題"], comunidad: ["comunidad.chat", "掲示板"] };
+  document.getElementById("pestana-nombre").textContent = archivos[nombre][0];
+  document.getElementById("pestana-kanji").textContent = archivos[nombre][1];
 }
 
 window.addEventListener("hashchange", () => { mostrarVista(); window.scrollTo(0, 0); });
 mostrarVista();
+
+/* ---------- Reloj de la barra de estado ---------- */
+function pintarReloj() {
+  document.getElementById("reloj").textContent =
+    new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+}
+pintarReloj();
+setInterval(pintarReloj, 20000);

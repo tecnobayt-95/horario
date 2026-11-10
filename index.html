@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#e5492c">
   <title>Horario de clase 26/27</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="horario.css?v=4">
+  <link rel="stylesheet" href="horario.css?v=5">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -51,13 +51,17 @@
   </header>
 
   <nav class="menu" aria-label="Menú principal">
-    <a href="#horario"><svg class="ico" aria-hidden="true"><use href="#i-reloj"/></svg><span>Horario</span><small lang="ja">時間割</small></a>
-    <a href="#calendario"><svg class="ico" aria-hidden="true"><use href="#i-calendario"/></svg><span>Calendario</span><small lang="ja">暦</small></a>
-    <a href="#tareas"><svg class="ico" aria-hidden="true"><use href="#i-lista"/></svg><span>Tareas</span><small lang="ja">課題</small></a>
-    <a href="#comunidad"><svg class="ico" aria-hidden="true"><use href="#i-usuarios"/></svg><span>Comunidad</span><small lang="ja">掲示板</small></a>
+    <a href="#horario"><svg class="ico" aria-hidden="true"><use href="#i-reloj"/></svg><span>horario<small>.json</small></span></a>
+    <a href="#calendario"><svg class="ico" aria-hidden="true"><use href="#i-calendario"/></svg><span>calendario<small>.md</small></span></a>
+    <a href="#tareas"><svg class="ico" aria-hidden="true"><use href="#i-lista"/></svg><span>tareas<small>.todo</small></span></a>
+    <a href="#comunidad"><svg class="ico" aria-hidden="true"><use href="#i-usuarios"/></svg><span>comunidad<small>.chat</small></span></a>
   </nav>
 
   <!-- Los rellena horario.js -->
+  <div class="pestanas" aria-hidden="true">
+    <div class="pestana"><span id="pestana-nombre">horario.json</span><small id="pestana-kanji" lang="ja">時間割</small></div>
+  </div>
+
   <div class="vista activa" id="v-horario">
   <section class="paneles">
     <div class="panel" id="ahora"></div>
@@ -225,9 +229,10 @@
       <a href="#comunidad">Comunidad</a>
     </div>
     <p class="pie-nota">Proyecto de clase · Curso 2026/27 · Hecho con HTML, CSS, JavaScript y Firebase · 頑張ろう</p>
+    <div class="pie-der"><span id="reloj"></span><span>es-ES</span><span>UTF-8</span></div>
   </footer>
 
 </main>
-<script src="horario.js?v=4"></script>
+<script src="horario.js?v=5"></script>
 </body>
 </html>
