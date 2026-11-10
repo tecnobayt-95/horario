@@ -836,3 +836,61 @@ td.clase.ahora, .carta-dia.ahora a { outline: none; border-color: var(--acento);
   body::after { display: block; }
   .menu a { font-size: 10px; letter-spacing: .04em; }
 }
+
+/* =====================================================
+   AJUSTE: más cerca de las referencias
+   - HUD: casi monocromo, curvas y malla de puntos visibles, rojo solo para lo activo
+   - Liquid Glass: bordes con luz, brillo diagonal y más profundidad
+   ===================================================== */
+body::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' fill='none'%3E%3Cdefs%3E%3Cpattern id='d' width='16' height='16' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='1' cy='1' r='.9' fill='%238e97aa'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23d)' opacity='.22'/%3E%3Cg stroke='%238e97aa' stroke-opacity='.34' stroke-width='1'%3E%3Cellipse cx='200' cy='430' rx='55' ry='30'/%3E%3Cellipse cx='200' cy='430' rx='90' ry='50'/%3E%3Cellipse cx='200' cy='430' rx='130' ry='72'/%3E%3Cellipse cx='200' cy='430' rx='175' ry='98'/%3E%3Cellipse cx='200' cy='430' rx='225' ry='126'/%3E%3Cellipse cx='200' cy='430' rx='280' ry='156'/%3E%3Cellipse cx='200' cy='430' rx='340' ry='190'/%3E%3Cellipse cx='600' cy='170' rx='70' ry='38' transform='rotate(35 600 170)'/%3E%3Cellipse cx='600' cy='170' rx='110' ry='60' transform='rotate(35 600 170)'/%3E%3Cellipse cx='600' cy='170' rx='155' ry='86' transform='rotate(35 600 170)'/%3E%3Cellipse cx='600' cy='170' rx='205' ry='114' transform='rotate(35 600 170)'/%3E%3Cellipse cx='600' cy='170' rx='260' ry='144' transform='rotate(35 600 170)'/%3E%3Cellipse cx='600' cy='170' rx='320' ry='178' transform='rotate(35 600 170)'/%3E%3Cellipse cx='600' cy='170' rx='385' ry='214' transform='rotate(35 600 170)'/%3E%3Cellipse cx='420' cy='300' rx='40' ry='22' transform='rotate(-15 420 300)'/%3E%3Cellipse cx='420' cy='300' rx='70' ry='38' transform='rotate(-15 420 300)'/%3E%3Cellipse cx='420' cy='300' rx='105' ry='58' transform='rotate(-15 420 300)'/%3E%3C/g%3E%3Cg stroke='%23ff3b30' stroke-opacity='.45' stroke-width='1.2'%3E%3Cellipse cx='260' cy='400' rx='60' ry='34' transform='rotate(-20 260 400)'/%3E%3Cellipse cx='260' cy='400' rx='95' ry='54' transform='rotate(-20 260 400)'/%3E%3Cellipse cx='260' cy='400' rx='135' ry='76' transform='rotate(-20 260 400)'/%3E%3Cellipse cx='260' cy='400' rx='180' ry='102' transform='rotate(-20 260 400)'/%3E%3Cellipse cx='260' cy='400' rx='230' ry='130' transform='rotate(-20 260 400)'/%3E%3C/g%3E%3C/svg%3E") center / cover no-repeat; }
+body::after {
+  background:
+    radial-gradient(40% 35% at 12% 8%, rgba(59, 108, 255, .17), transparent 70%),
+    radial-gradient(35% 35% at 90% 55%, rgba(22, 199, 181, .11), transparent 70%),
+    radial-gradient(40% 40% at 45% 100%, rgba(124, 77, 255, .15), transparent 70%),
+    radial-gradient(25% 25% at 80% 0%, rgba(255, 59, 48, .16), transparent 70%);
+}
+
+/* Cristal con más luz y profundidad */
+.contenedor, .calendario, .tareas, .chat, .pie {
+  background: linear-gradient(135deg, rgba(255, 255, 255, .13) 0%, transparent 38%), var(--vidrio);
+}
+.panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, .13) 0%, transparent 38%),
+              linear-gradient(135deg, color-mix(in srgb, var(--c, transparent) 12%, var(--vidrio)), var(--vidrio));
+}
+.panel, .contenedor, .calendario, .tareas, .chat, .pie, .menu, #tabs-dia {
+  border-color: rgba(255, 255, 255, .17);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), inset 0 -24px 40px rgba(255, 255, 255, .025), 0 20px 50px rgba(0, 0, 0, .45);
+}
+[data-tema="claro"] .panel, [data-tema="claro"] .contenedor, [data-tema="claro"] .calendario,
+[data-tema="claro"] .tareas, [data-tema="claro"] .chat, [data-tema="claro"] .pie, [data-tema="claro"] .menu {
+  border-color: rgba(16, 19, 26, .12); box-shadow: inset 0 1px 0 #fff, 0 14px 36px rgba(16, 19, 26, .12);
+}
+
+/* Baldosas: cristal ahumado casi monocromo; el color solo en un marcador */
+td.clase, .carta-dia a {
+  background: linear-gradient(150deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .03));
+  border: 1px solid rgba(255, 255, 255, .16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
+  position: relative;
+}
+td.clase::after, .carta-dia a::after {
+  content: ""; position: absolute; top: 9px; right: 9px; width: 7px; height: 7px;
+  background: var(--c); box-shadow: 0 0 10px var(--c);
+}
+td.clase:hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 8px 24px rgba(0, 0, 0, .4); }
+td.clase.ahora, .carta-dia.ahora a { background: linear-gradient(150deg, rgba(255, 59, 48, .26), rgba(255, 59, 48, .05)); }
+[data-tema="claro"] td.clase, [data-tema="claro"] .carta-dia a { background: linear-gradient(150deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, .4)); border-color: rgba(16, 19, 26, .12); }
+
+/* Detalles de HUD: marcas de mira en las esquinas de la tabla */
+.contenedor { position: relative; }
+.contenedor::before, .contenedor::after {
+  position: absolute; font: 14px var(--mono); line-height: 1; color: var(--acento); opacity: .8; pointer-events: none;
+}
+.contenedor::before { content: "+"; top: 6px; left: 8px; background: none; }
+.contenedor::after { content: "+"; bottom: 6px; right: 8px; }
+
+/* Menú y botones con más relieve */
+.menu a.activo { background: rgba(255, 255, 255, .18); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -2px 0 var(--acento), 0 4px 14px rgba(0, 0, 0, .3); }
+.boton { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 6px 16px rgba(0, 0, 0, .3); }
