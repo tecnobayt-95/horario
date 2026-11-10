@@ -351,6 +351,7 @@ function pintarListaClase() {
 function pintarTodo() {
   pintarCalendario();
   pintarListaClase();
+  pintarExamen();
 }
 
 function pintarAcceso() {
@@ -608,3 +609,23 @@ function pintarReloj() {
 }
 pintarReloj();
 setInterval(pintarReloj, 20000);
+
+/* ---------- Próximo examen (sale de los avisos de la clase) ---------- */
+function pintarExamen() {
+  const panel = document.getElementById("examen");
+  const hoy = ISO(new Date());
+  const examen = eventosClase.filter(e => e.tipo === "examen" && e.fecha >= hoy)
+    .sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
+
+  if (!examen) {
+    panel.className = "panel";
+    panel.innerHTML = "<small>Examen · 試験</small><h2>Sin exámenes</h2><p>Nada a la vista</p>";
+    return;
+  }
+  const dias = Math.round((new Date(examen.fecha) - new Date(hoy)) / 86400000);
+  const cuando = dias === 0 ? "hoy" : dias === 1 ? "mañana" : "en " + dias + " días";
+  const asignatura = unicas[examen.materia] ? unicas[examen.materia].materia : "Examen";
+  panel.className = "panel " + examen.materia + (dias <= 3 ? " urgente" : "");
+  panel.innerHTML = `<small>Examen · 試験</small><h2>${escapar(asignatura)}</h2><p>${escapar(examen.titulo)} · ${formatoFecha(examen.fecha)} · ${cuando}</p>`;
+}
+pintarExamen();
